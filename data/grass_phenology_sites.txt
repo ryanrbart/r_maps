@@ -1,0 +1,3 @@
+name, lat, lon
+Santa Barbara, 34.447337, -119.940671
+Morro Bay, 35.372583, -120.814135
