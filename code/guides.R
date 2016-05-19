@@ -5,25 +5,38 @@
 # Get GRASS to R instructions
 # See https://grasswiki.osgeo.org/wiki/R_statistics/spgrass6
 
-# Open grass
-# In command line, start R.
+# Open GRASS
+
+# First create vector files in grass.
+# Example GRASS code for basin raster file to basin vector file
+# r.to.vect input=basin_rast output=basin_vect feature=area
+
+# In GRASS command line, start R.
 # Load spgrass6 and raster libraries 
 library(spgrass6)
-library(raster)
 
 # Read a raster or vector file into R
 file_rast = readRAST("file.rast")
 file_vect = readVECT("file.vect")
 
-# Convert files to rasters (probably a comprable step for vectors)
-file_rast = raster(file_rast)
-save(fire_rast, file = "fire_rast.RData")
+# Save vector and raster files to be opened in stand-alone (non-grass) R
+save(file_rast, file = "file_rast.RData")
+save(file_vect, file = "file_vect.RData")
 
-# In R
-load("fire_rast.RData")
-plot(fire_rast)
-# For ggplot - Fortify?
-fortify(fire_rast)  # error
 
+# ---
+# In stand-alone R
+
+load("file_rast.RData")
+load("file_vect.RData")
+
+# Convert from UTM to longlat (if needed)
+file_rast_t = spTransform(file_rast,CRS("+proj=longlat"))
+file_vect_t = spTransform(file_vect,CRS("+proj=longlat"))
+
+# For vector input into ggmap
+fortify(file_vect)
 
 # -------------
+
+

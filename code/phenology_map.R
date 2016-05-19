@@ -7,7 +7,7 @@ lapply(x, library, character.only = TRUE) # load the required packages
 
 
 # Read in phenology site data
-phen_site <- read.table("data/grass_phenology_sites.txt", sep = ",", header = TRUE)
+phen_site <- read.table("data/phenology/grass_phenology_sites.txt", sep = ",", header = TRUE)
 phen_site
 
 # ----
