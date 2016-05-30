@@ -1,0 +1,25 @@
+---
+title: "Making maps in R"
+output: html_document
+date: "24 May 2016"
+---
+
+Once you have your data out of GRASSIn stand-alone R
+
+load("file_rast.RData")
+load("file_vect.RData")
+
+# Convert from UTM to longlat (if needed)
+file_rast_t = spTransform(file_rast,CRS("+proj=longlat"))
+file_vect_t = spTransform(file_vect,CRS("+proj=longlat"))
+
+# For vector input into ggmap
+fortify(file_vect)
+
+# -------------
+
+
+
+
+
+

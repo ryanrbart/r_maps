@@ -1,0 +1,38 @@
+---
+title: "Moving data from GRASS to R"
+author: "Bart"
+date: "May 30, 2016"
+output: html_document
+---
+
+This is an example of how to transfer GIS files from GRASS to R.
+
+## Getting Data out of GRASS
+
+Note that you will probably have to run this markdown in GRASS terminal...
+
+Assuming that you have run some RHESSys modeling, there is a decent chance that you have GIS files in GRASS. To transfer these files to R, you need to open GRASS as you normally do. In the GRASS terminal window where your project resides, open R by typing `R`. This will open R on the command line. You then need to load the R library that will transfer files from GRASS to R.
+
+```{r}
+library(spgrass6)
+```
+
+This library is made for GRASS 6, which is the version I am currently using. There is also a version for GRASS 7 (rgrass7), but I not used it. Also note that most of the GRASS instructions that I use here were taken from this website: https://grasswiki.osgeo.org/wiki/R_statistics/spgrass6
+
+
+First create vector files in grass.
+Example GRASS code for basin raster file to basin vector file
+r.to.vect input=basin_rast output=basin_vect feature=area
+
+In GRASS command line, start R.
+Load spgrass6 and raster libraries 
+library(spgrass6)
+
+Read a raster or vector file into R
+file_rast = readRAST("file.rast")
+file_vect = readVECT("file.vect")
+
+Save vector and raster files to be opened in stand-alone (non-grass) R
+save(file_rast, file = "file_rast.RData")
+save(file_vect, file = "file_vect.RData")
+
