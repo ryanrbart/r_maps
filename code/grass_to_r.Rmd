@@ -7,7 +7,7 @@ output: html_document
 
 This is an example of how to transfer GIS files from GRASS to R.
 
-## Getting Data out of GRASS
+### Getting Data out of GRASS
 
 Note that you will probably have to run this markdown in GRASS terminal...
 
