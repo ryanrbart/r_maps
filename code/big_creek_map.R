@@ -4,26 +4,139 @@
 x <- c("ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","sp","maps","grid","mapdata","raster")
 lapply(x, library, character.only = TRUE) # load the required packages
 
+library(RColorBrewer)
+library(lubridate)
+library(manipulate)
+library(devtools)
+
 
 # -------------
-# For running R in Grass 
+# Big Creek Detailed Map
 
-
-# P301 GRASS
-
-p301_vect = readVECT("p301_basin_vect")
-save(p301_vect, file = "p301_vect.RData")
-
-# -------------
-# For R (vector processing)
-
-load("../data/ssczo/bc_vect.RData")
-load("../data/ssczo/p301_vect.RData")
-
+load("data/ssczo/bc_aspect.RData")
+load("data/ssczo/bc_basin.RData")
+load("data/ssczo/bc_dem30m.RData")
+load("data/ssczo/bc_slope.RData")
+load("data/ssczo/bc_stream.RData")
+load("data/ssczo/bc_basin_v.RData")
+load("data/ssczo/bc_stream_v.RData")
 
 # summary of imported data
-bc_vect
-p301_vect
+#summary(bc_aspect)
+#summary(bc_basin)
+#summary(bc_dem30m)
+#summary(bc_slope)
+#summary(bc_stream)
+#summary(bc_basin_v)
+#summary(bc_stream_v)
+
+# Rasterize and subset and reproject from utm to longlat
+subset_utm_to_longlat = function(x){
+  x = raster(x)
+  x <- crop(x, extent(x,2550,3000,2300,2700))    # (for Raster x, row 5 to 10, column 7 to 12)
+  new_proj <- "+proj=longlat"
+  x <- projectRaster(x, crs = new_proj)
+}
+bc_aspect = subset_utm_to_longlat(bc_aspect)
+bc_aspect = bc_aspect*pi/180          # Convert aspect from degrees (GRASS) to radians (R)
+bc_basin = subset_utm_to_longlat(bc_basin)
+bc_dem30m = subset_utm_to_longlat(bc_dem30m)
+bc_slope = subset_utm_to_longlat(bc_slope)
+bc_slope = bc_slope*pi/180          # Convert aspect from degrees (GRASS) to radians (R)
+bc_stream = subset_utm_to_longlat(bc_stream)
+
+bc_aspect_p <- as.data.frame(rasterToPoints(bc_aspect))
+bc_basin_p <- as.data.frame(rasterToPoints(bc_basin))
+bc_dem30m_p <- as.data.frame(rasterToPoints(bc_dem30m))
+bc_slope_p <- as.data.frame(rasterToPoints(bc_slope))
+bc_stream_p <- as.data.frame(rasterToPoints(bc_stream))
+
+
+# Convert vector from UTM to longlat
+bc_basin_v = spTransform(bc_basin_v,CRS("+proj=longlat"))
+bc_stream_v = spTransform(bc_stream_v,CRS("+proj=longlat"))   # subset this???
+
+# ----------
+# Make Big Creek Map
+
+# SunPosition Gist
+source_gist("e2dbdc8e9c45c1c2b7fc")
+
+# Source http://mikebirdgeneau.com/blog/light_elevation_mountains/
+hillslope_map<-function(mon,dy,hr){
+  sunpos<-sunPosition(year = 2014,month = mon,day = dy,hour = hr+7,min = 0,sec = 0,lat = mean(bc_dem30m_p$y),long=mean(bc_dem30m_p$x))
+  hs<-hillShade(bc_slope,bc_aspect,angle = sunpos$elevation,direction = sunpos$azimuth,normalize = TRUE)/255.0
+  #plot(hs,col=grey(1:100/100),legend=F)
+  #plot(bc_dem30m,col=terrain.colors(100),alpha=0.0,add=T,legend=F)
+  HS<-data.frame(rasterToPoints(hs))
+  DEM<-data.frame(rasterToPoints(bc_dem30m))
+  b.dem <- seq(min(DEM$dem30m),max(DEM$dem30m),length.out=100)
+  map = ggplot(HS,aes(x=x,y=y))+
+                 geom_raster(data=DEM,aes(fill=dem30m),alpha=0.75)+
+                 geom_raster(aes(alpha=1-layer),fill="gray10")+
+                 scale_alpha(guide=FALSE,range = c(0,1.00))+
+                 scale_fill_gradientn(name="Altitude",colours = terrain.colors(100))+
+                 theme_bw()+coord_equal()+xlab("Longitude")+ylab("Latitude")+ggtitle("Big Creek, CA")
+  return(map)
+}
+
+bc_map = hillslope_map(6,21,7)  # month, day, hour
+#bc_map
+
+bc_map + geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'yellow', fill = 'black', alpha = .05, size = .3) +
+  geom_raster(data=bc_stream_p, aes(fill=str.t1000),alpha=0.75)
+  #geom_polygon(aes(x = long, y = lat, group = group), data = bc_stream_v, colour = 'white', fill = 'black', alpha = .05, size = .3)
+
+
+
+
+
+ggplot(data=bc_aspect, aes(x=x, y=y)) + 
+  #  coord_cartesian() +
+  geom_raster(aes(fill=aspect),alpha=0.75) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'black', fill = 'black', alpha = .05, size = .3)
+scale_fill_gradientn(name="Elevation",colours = terrain.colors(100)) +
+  #  theme_bw() + coord_equal() + xlab("Longitude") + ylab("Latitude")
+  
+  ggplot(data=bc_dem30m, aes(x=x, y=y)) + 
+  coord_cartesian() +
+  geom_raster(aes(fill=dem30m),alpha=0.75) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'black', fill = 'black', alpha = .05, size = .3) +
+  scale_fill_gradientn(name="Elevation",colours = terrain.colors(100))
+#theme_bw() + coord_equal() + xlab("Longitude") + ylab("Latitude")
+
+
+# ----
+
+# Derive basemap
+#?get_stamenmap
+
+bc_center = data.frame(lon = -119.233455, lat = 37.04815)
+bc_box = c(-119.3, 37, -119.17, 37.11)   # left, bottom, right, top
+
+
+
+
+#bc_base <- get_map(location = bc_center,  maptype = "terrain", source = "stamen", zoom = 12)
+bc_base <- get_map(location = bc_box,  maptype = "terrain", source = "stamen")
+
+# Plot map
+bc_map = ggmap(bc_base) + 
+  geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'black', fill = 'black', alpha = .05, size = .3) +
+  #geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'black', fill = NA, alpha = .4, size = .3) +
+  # geom_text(data = phen_site, aes(label = paste("  ", as.character(name), sep="")), angle = 0, vjust= 1, hjust = 1.1, color = "black") +
+  #geom_point(data = bc_box, color = "black", size = 3.5) +
+  labs(x="Longitude",y="Latitude")
+bc_map
+
+bc_map + geom_raster(data = bc_dem30m, aes(x=x, y=y, fill=dem30m)) + coord_cartesian()
+
+bc_map + geom_raster(data = bc_aspect, aes(x=x, y=y, fill=aspect)) + coord_cartesian()
+bc_map + geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'black', fill = 'black', alpha = .05, size = .3) +
+  
+
+
+# ---
 
 # Correct zone of p301 files from 10 to 11
 proj4string(p301_vect) <- CRS("+proj=utm +zone=11 +datum=NAD27 +units=m +no_defs +ellps=clrk66")
@@ -42,7 +155,8 @@ p301_vect_f = fortify(p301_vect_t)
 # -------------
 # For R (raster processing)
 
-load("../data/ssczo/p301_dem.RData")
+load("data/ssczo/p301_dem.RData")
+load("data/ssczo/p301_vect.RData")
 summary(p301_dem)
 
 # Correct zone of p301 files from 10 to 11
