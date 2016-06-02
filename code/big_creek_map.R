@@ -56,6 +56,13 @@ bc_stream_p <- as.data.frame(rasterToPoints(bc_stream))
 bc_basin_v = spTransform(bc_basin_v,CRS("+proj=longlat"))
 bc_stream_v = spTransform(bc_stream_v,CRS("+proj=longlat"))   # subset this???
 
+b <- bbox(bc_basin)
+#bc_stream_subset = crop(bc_stream_v, bc_basin_v)    # Only includes stream inside watershed
+bc_stream_subset = crop(bc_stream_v, b)              # Includes all streams in tile
+
+
+
+
 # ----------
 # Make Big Creek Map
 
@@ -84,26 +91,10 @@ bc_map = hillslope_map(6,21,7)  # month, day, hour
 #bc_map
 
 bc_map + geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'yellow', fill = 'black', alpha = .05, size = .3) +
-  geom_raster(data=bc_stream_p, aes(fill=str.t1000),alpha=0.75)
-  #geom_polygon(aes(x = long, y = lat, group = group), data = bc_stream_v, colour = 'white', fill = 'black', alpha = .05, size = .3)
+  #geom_raster(data=bc_stream_p, aes(fill=str.t1000),alpha=0.75)
+  geom_path(aes(x = long, y = lat, group=group), data = bc_stream_subset, colour = 'white', size = 0.3)
 
 
-
-
-
-ggplot(data=bc_aspect, aes(x=x, y=y)) + 
-  #  coord_cartesian() +
-  geom_raster(aes(fill=aspect),alpha=0.75) +
-  geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'black', fill = 'black', alpha = .05, size = .3)
-scale_fill_gradientn(name="Elevation",colours = terrain.colors(100)) +
-  #  theme_bw() + coord_equal() + xlab("Longitude") + ylab("Latitude")
-  
-  ggplot(data=bc_dem30m, aes(x=x, y=y)) + 
-  coord_cartesian() +
-  geom_raster(aes(fill=dem30m),alpha=0.75) +
-  geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'black', fill = 'black', alpha = .05, size = .3) +
-  scale_fill_gradientn(name="Elevation",colours = terrain.colors(100))
-#theme_bw() + coord_equal() + xlab("Longitude") + ylab("Latitude")
 
 
 # ----
