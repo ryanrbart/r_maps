@@ -1,17 +1,24 @@
 # Map for grassland phenology manuscript
 
 
+# --------------------------------------------------------------------------
 # Load libraries
+# --------------------------------------------------------------------------
 x <- c("ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","sp","maps","grid","mapdata")
 lapply(x, library, character.only = TRUE) # load the required packages
 
 
+# --------------------------------------------------------------------------
+# Read in data
+# --------------------------------------------------------------------------
 # Read in phenology site data
 phen_site <- read.table("data/phenology/grass_phenology_sites.txt", sep = ",", header = TRUE)
 phen_site
 
-# ----
+
+# --------------------------------------------------------------------------
 # Detailed map
+# --------------------------------------------------------------------------
 
 # Derive basemap
 #?get_stamenmap
@@ -28,8 +35,9 @@ phen_map = ggmap(phen_base) +
 phen_map
 
 
-# ----
+# --------------------------------------------------------------------------
 # Inset map
+# --------------------------------------------------------------------------
 
 states <- map_data("state")
 ca_df <- subset(states, region == "california")
@@ -42,9 +50,9 @@ ca_inset <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)
   geom_rect(aes(xmin=-121.1,xmax=-119.4,ymin=34.2,ymax=35.7),colour="red",fill=NA,size=1)
 ca_inset
 
-# ----------
+# --------------------------------------------------------------------------
 # Put it all together
-
+# --------------------------------------------------------------------------
 
 #png(file="phenology_map.png",w=1800,h=1800, res=300)
 pdf("phenology_map.pdf", width = 5, height = 5)
@@ -63,8 +71,9 @@ dev.off()
 
 
 
-# --------------------
+# --------------------------------------------------------------------------
 # Other option for detailed map
+# --------------------------------------------------------------------------
 
 phen_map = ggplot() + 
   geom_polygon(data = usa, aes(x=long, y = lat, group = group)) +
