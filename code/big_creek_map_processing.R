@@ -38,7 +38,7 @@ load("data/ssczo/bc_stream_v.RData")
 # Rasterize and subset and reproject from utm to longlat
 subset_utm_to_longlat = function(x){
   x = raster(x)
-  x <- crop(x, extent(x,2600,2980,2320,2650))    # (for Raster x, row 5 to 10, column 7 to 12)
+  x <- crop(x, extent(x,2550,3000,2280,2700))    # (for Raster x, row 5 to 10, column 7 to 12)
   new_proj <- "+proj=longlat"
   x <- projectRaster(x, crs = new_proj)
 }

@@ -1,3 +1,8 @@
+
+
+source("code/big_creek_map_processing.R")
+
+
 # --------------------------------------------------------------------------
 # Big Creek Contour Map
 # --------------------------------------------------------------------------
@@ -6,10 +11,15 @@ bc_map = ggplot() +
   geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
   geom_polygon(aes(x = long, y = lat, group = group), data = p301_basin_v, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
 #  geom_polygon(aes(x = long, y = lat, group = group), data = p301_shed, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
-  stat_contour(aes(x = x, y = y, z=dem30m), data = bc_dem30m_p, bins=10, colour="tan", size=0.4) +
+  stat_contour(aes(x = x, y = y, z=dem30m), data = bc_dem30m_p, bins=13, colour="tan", size=0.4) +
   geom_path(aes(x = long, y = lat, group=group), data = bc_stream_subset_basin, colour = 'blue', size = 1, alpha=0.6) +
   geom_point(aes(x = coords.x1, y = coords.x2), data = as.data.frame(coordinates(p301_met_u)), shape = 24, alpha = 1, color="black", size = 3, stroke=2) +
-  coord_fixed(1.3)
+  coord_fixed(1.3, xlim=c(-119.290,-119.174), ylim=c(37.005,37.104)) +
+  labs(x="Longitude",y="Latitude") +
+  theme(axis.text = element_text(size = 8)) +
+  theme(axis.title = element_text(size = 9)) +
+  theme(plot.background = element_rect(colour = "grey50")) +
+  theme_bw()
 bc_map
 
 
@@ -20,12 +30,16 @@ bc_map
 p301_map = ggplot() +
   geom_polygon(aes(x = long, y = lat, group = group), data = p301_basin_v, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
 #  geom_polygon(aes(x = long, y = lat, group = group), data = p301_shed, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
-  stat_contour(aes(x = x, y = y, z=dem30m), data = p301_dem30m_p, bins=20, colour="tan", size=0.4) +
+  stat_contour(aes(x = x, y = y, z=dem30m), data = p301_dem30m_p, bins=17, colour="tan", size=0.4) +
   geom_path(aes(x = long, y = lat, group=group), data = p301_stream_subset_basin, colour = 'blue', size = 1) +
   #geom_point(aes(x = coords.x1, y = coords.x2), data = as.data.frame(coordinates(p301_met_u)), shape = 24, alpha = 1, color="black", size = 3, stroke=2) + 
-  coord_fixed(1.3)
+  coord_fixed(1.3, xlim=c(-119.208,-119.189), ylim=c(37.0605,37.0745)) +
+  labs(x="Longitude",y="Latitude") +
+#  theme(axis.text = element_text(size = 7)) +
+#  theme(axis.title = element_text(size = 8)) +
+  theme(plot.background = element_rect(colour = "grey50")) +
+  theme_bw()
 p301_map
-
 
 
 # --------------------------------------------------------------------------
@@ -51,12 +65,12 @@ ca_inset
 # --------------------------------------------------------------------------
 
 
-#png(file="big_creek_map.png",w=1800,h=1800, res=300)
-pdf("big_creek_map.pdf", width = 5, height = 5)
+#png(file="images/big_creek_map.png",w=1800,h=1800, res=300)
+pdf("images/big_creek_map.pdf", width = 7, height = 4.8)
 grid.newpage()
-v1<-viewport(width = 1, height = 1, x = 0.5, y = 0.5) #plot area for the big creek map
-v2<-viewport(width = .4, height = .4, x = 0.8, y = 0.75) #plot area for the p301 map
-v3<-viewport(width = .4, height = .4, x = 0.8, y = 0.75) #plot area for the inset map
+v1<-viewport(width = .87, height = .87, x = 0.32, y = 0.47) #plot area for the big creek map
+v2<-viewport(width = .45, height = .45, x = 0.8, y = 0.28) #plot area for the p301 map
+v3<-viewport(width = .3, height = .3, x = 0.75, y = 0.7) #plot area for the inset map
 print(bc_map,vp=v1)
 print(p301_map,vp=v2)
 print(ca_inset,vp=v3)
