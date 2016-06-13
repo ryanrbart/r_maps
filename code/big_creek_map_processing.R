@@ -5,7 +5,7 @@
 # Load libraries
 # --------------------------------------------------------------------------
 
-x <- c("ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","sp","maps","grid","mapdata","raster")
+x <- c("ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","sp","maps","grid","mapdata","raster","ggthemes","ggsn")
 lapply(x, library, character.only = TRUE) # load the required packages
 
 library(RColorBrewer)
@@ -136,7 +136,57 @@ prov_sheds <- readOGR(dsn = "data/ssczo/", layer = "Providence_Watersheds")
 prov_sheds = spTransform(prov_sheds,CRS("+proj=longlat"))
 p301_shed = prov_sheds[c(1),]    # P301
 
+# --------------------------------------------------------------------------
+# P301 Flux Tower and Stream Gauge Location
+# --------------------------------------------------------------------------
 
+flux_gauge <- read.table("data/ssczo/p301_flux_gauge.csv", sep = ",", header = TRUE)
+flux_gauge
+
+
+
+# --------------------------------------------------------------------------
+# Smooth polygon
+# --------------------------------------------------------------------------
+
+
+# Smooth out grid-derived polygon layers 
+# http://stackoverflow.com/questions/13577918/r-plotting-a-curve-around-a-set-of-points
+spline.poly <- function(xy, vertices, k=3, ...) {
+  # Assert: xy is an n by 2 matrix with n >= k.
+  
+  # Wrap k vertices around each end.
+  n <- dim(xy)[1]
+  if (k >= 1) {
+    data <- rbind(xy[(n-k+1):n,], xy, xy[1:k, ])
+  } else {
+    data <- xy
+  }
+  
+  # Spline the x and y coordinates.
+  data.spline <- spline(1:(n+2*k), data[,1], n=vertices, ...)
+  x <- data.spline$x
+  x1 <- data.spline$y
+  x2 <- spline(1:(n+2*k), data[,2], n=vertices, ...)$y
+  
+  # Retain only the middle part.
+  cbind(x1, x2)[k < x & x <= n+k, ]
+}
+
+
+p301_basin_v_2 = fortify(p301_basin_v)
+
+p301_basin_v_3 = as.data.frame(spline.poly(as.matrix(p301_basin_v_2), 50))
+
+
+
+
+# --------------------------------------------------------------------------
+# Arrows
+# --------------------------------------------------------------------------
+
+
+df <- data.frame(x1 = 2.62, x2 = 3.57, y1 = 21.0, y2 = 15.0)
 
 
 

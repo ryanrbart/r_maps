@@ -9,17 +9,18 @@ source("code/big_creek_map_processing.R")
 
 bc_map = ggplot() +
   geom_polygon(aes(x = long, y = lat, group = group), data = bc_basin_v, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
-  geom_polygon(aes(x = long, y = lat, group = group), data = p301_basin_v, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
-#  geom_polygon(aes(x = long, y = lat, group = group), data = p301_shed, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
+  geom_polygon(aes(x = long, y = lat, group = group), data = p301_shed, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
   stat_contour(aes(x = x, y = y, z=dem30m), data = bc_dem30m_p, bins=13, colour="tan", size=0.4) +
-  geom_path(aes(x = long, y = lat, group=group), data = bc_stream_subset_basin, colour = 'blue', size = 1, alpha=0.6) +
-  geom_point(aes(x = coords.x1, y = coords.x2), data = as.data.frame(coordinates(p301_met_u)), shape = 24, alpha = 1, color="black", size = 3, stroke=2) +
+  geom_path(aes(x = long, y = lat, group=group), data = bc_stream_subset_basin, colour = 'blue', size = .6, alpha=1) +
+  geom_point(aes(x = coords.x1, y = coords.x2), data = as.data.frame(coordinates(p301_met_u)), shape = 22, alpha = 1, color="black", fill="yellow", size = 1.5, stroke=1) +
+  geom_text(aes(x=coords.x1, y=coords.x2, label="Met Station"), data = as.data.frame(coordinates(p301_met_u)), size=2, angle = 0, vjust= -1.5, hjust = 0.3, color = "black") +
   coord_fixed(1.3, xlim=c(-119.290,-119.174), ylim=c(37.005,37.104)) +
-  labs(x="Longitude",y="Latitude") +
-  theme(axis.text = element_text(size = 8)) +
-  theme(axis.title = element_text(size = 9)) +
-  theme(plot.background = element_rect(colour = "grey50")) +
-  theme_bw()
+  labs(x="Longitude",y="Latitude", title="Big Creek") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 6)) +
+  theme(axis.title = element_text(size = 7)) +
+  theme(plot.title = element_text(size = 7))
+#  scalebar(data = bc_basin_v, location = "bottomright", dist=.5, dd2km=TRUE, model="WGS84")
 bc_map
 
 
@@ -28,17 +29,21 @@ bc_map
 # --------------------------------------------------------------------------
 
 p301_map = ggplot() +
-  geom_polygon(aes(x = long, y = lat, group = group), data = p301_basin_v, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
-#  geom_polygon(aes(x = long, y = lat, group = group), data = p301_shed, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
-  stat_contour(aes(x = x, y = y, z=dem30m), data = p301_dem30m_p, bins=17, colour="tan", size=0.4) +
-  geom_path(aes(x = long, y = lat, group=group), data = p301_stream_subset_basin, colour = 'blue', size = 1) +
-  #geom_point(aes(x = coords.x1, y = coords.x2), data = as.data.frame(coordinates(p301_met_u)), shape = 24, alpha = 1, color="black", size = 3, stroke=2) + 
+ # geom_polygon(aes(x = long, y = lat, group = group), data = p301_basin_v, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
+  geom_polygon(aes(x = x1, y = x2), data = p301_basin_v_3, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
+  #  geom_polygon(aes(x = long, y = lat, group = group), data = p301_shed, colour = 'gray30', fill = 'navajowhite2', alpha = 1, size = .5) +
+  stat_contour(aes(x = x, y = y, z=dem30m), data = p301_dem30m_p, bins=13, colour="tan", size=0.4) +
+  geom_path(aes(x = long, y = lat, group=group), data = p301_stream_subset_basin, colour = 'blue', size = .6, alpha=1) +
+  geom_point(aes(x=lon, y=lat), data = flux_gauge, shape = 22, alpha = 1, color="black", fill="yellow", size = 1.5, stroke=1) +
+  geom_text(aes(x=lon, y=lat, label=name), data = flux_gauge, size=2, angle = 0, vjust= 1.3, hjust = 1.08, color = "black") +
   coord_fixed(1.3, xlim=c(-119.208,-119.189), ylim=c(37.0605,37.0745)) +
-  labs(x="Longitude",y="Latitude") +
-#  theme(axis.text = element_text(size = 7)) +
-#  theme(axis.title = element_text(size = 8)) +
-  theme(plot.background = element_rect(colour = "grey50")) +
-  theme_bw()
+  labs(x="Longitude",y="Latitude", title="P301") +
+  theme_map() +
+# theme(axis.text = element_text(size = 7)) +
+# theme(axis.title = element_text(size = 8)) +
+  theme(plot.title = element_text(size = 7)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA)) 
+#  theme(plot.background = element_rect(colour = "grey50"))
 p301_map
 
 
@@ -48,17 +53,47 @@ p301_map
 
 states <- map_data("state")
 ca_df <- subset(states, region == "california")
-head(ca_df)
 
-ca_inset <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)) + 
-  coord_fixed(1.3) + 
-  geom_polygon(color = "black", fill = "lightgray") +
-  theme_nothing() +
-  geom_rect(aes(xmin=-119.3,xmax=-119.15,ymin=37.00,ymax=37.11),colour="red",fill=NA,size=1)
+# Option 1
+#ca_inset <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)) + 
+#  coord_fixed(1.3) + 
+#  geom_polygon(color = "black", fill = "khaki") +
+#  theme_nothing() +
+#  geom_rect(aes(xmin=-119.5,xmax=-118.95,ymin=36.75,ymax=37.3),colour="red",fill=NA,size=.6)
+#ca_inset
+
+# Option 2
+inset_ca_box = c(-124.8, 32.2, -113.9, 42.4)
+inset_base <- get_map(location = inset_ca_box,  maptype = "terrain-background", source = "stamen")
+
+# Plot map
+ca_inset = ggmap(inset_base) + 
+  geom_polygon(mapping = aes(x = long, y = lat, group = group), data=ca_df, color = "gray10", fill = NA, size=.3) +
+  geom_rect(aes(xmin=-119.5,xmax=-118.95,ymin=36.75,ymax=37.3),colour="black",fill=NA,size=.6) +
+  labs(x="Longitude",y="Latitude") +
+  theme_map()
 ca_inset
 
 
 
+# --------------------------------------------------------------------------
+# Arrows
+# --------------------------------------------------------------------------
+
+arrow1_df <- data.frame(x1 = 20, x2 = 10, y1 = 20.0, y2 = 19.0)
+arrow2_df <- data.frame(x1 = 10, x2 = 20, y1 = 20.0, y2 = 12.0)
+
+arrow1 = ggplot() +
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2, colour = "segment"), data = arrow1_df,arrow = arrow(angle=20, length = unit(0.2, "cm")), color="black", size=0.5) +
+  theme_nothing()
+  #coord_fixed()
+arrow1
+
+arrow2 = ggplot() +
+  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2, colour = "segment"), data = arrow2_df,arrow = arrow(angle=20, length = unit(0.2, "cm")), color="black", size=0.5) +
+  theme_nothing()
+  #coord_fixed()
+arrow2
 
 # --------------------------------------------------------------------------
 # Combining Maps for Display
@@ -66,24 +101,27 @@ ca_inset
 
 
 #png(file="images/big_creek_map.png",w=1800,h=1800, res=300)
-pdf("images/big_creek_map.pdf", width = 7, height = 4.8)
+pdf("images/big_creek_map.pdf", width = 6, height = 4)
 grid.newpage()
-v1<-viewport(width = .87, height = .87, x = 0.32, y = 0.47) #plot area for the big creek map
-v2<-viewport(width = .45, height = .45, x = 0.8, y = 0.28) #plot area for the p301 map
-v3<-viewport(width = .3, height = .3, x = 0.75, y = 0.7) #plot area for the inset map
+v1<-viewport(width = .98, height = .98, x = 0.31, y = 0.5) #plot area for the big creek map
+v2<-viewport(width = .47, height = .47, x = 0.8, y = 0.32) #plot area for the p301 map
+v3<-viewport(width = .38, height = .38, x = 0.8, y = 0.74) #plot area for the inset map
+v4<-viewport(width = .1, height = .05, x = 0.65, y = 0.67) # Arrow1
+v5<-viewport(width = .2, height = .2, x = 0.565, y = 0.49) # Arrow2
 print(bc_map,vp=v1)
 print(p301_map,vp=v2)
 print(ca_inset,vp=v3)
+print(arrow1,vp=v4)
+print(arrow2,vp=v5)
 dev.off()
 
 
 
-# Zoom in
+# Pointer lines
 # Smooth polygon line
 # Map labels
-# Inset Map > ggmap?
+# Inset Map > ggmap terrain map?
 # Map arrangement
-
 
 
 
