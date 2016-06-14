@@ -100,8 +100,10 @@ arrow2
 # --------------------------------------------------------------------------
 
 
-#png(file="images/big_creek_map.png",w=1800,h=1800, res=300)
-pdf("images/big_creek_map.pdf", width = 6, height = 4)
+
+#pdf("images/big_creek_map.pdf", width = 6, height = 4)
+setEPS(width = 6, height = 4)
+postscript("images/big_creek_map.eps")
 grid.newpage()
 v1<-viewport(width = .98, height = .98, x = 0.31, y = 0.5) #plot area for the big creek map
 v2<-viewport(width = .47, height = .47, x = 0.8, y = 0.32) #plot area for the p301 map
