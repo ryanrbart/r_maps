@@ -1,0 +1,5 @@
+name, lat, lon
+Santa Barbara, 34.467285, -119.687561
+Southern Sierra, 37.068796, -119.199605
+Santa Fe, 35.727777, -105.795049
+HJ Andrews, 44.212493, -122.254860
