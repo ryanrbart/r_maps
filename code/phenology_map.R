@@ -37,14 +37,15 @@ sb = dplyr::filter(phen_site2, name == 'Santa Barbara')
 mor = dplyr::filter(phen_site2, name == 'Morro Bay')
 
 phen_map <- ggplot() + 
-  coord_fixed(1.3) + 
-  geom_polygon(data = usa_coast, aes(x = long, y = lat, group = group), color = "black", fill = "lightgrey") +
+  geom_polygon(data = usa_coast, aes(x = long, y = lat, group = group), color = "black", fill = "navajowhite2") +
   coord_fixed(xlim = c(-121.2, -119.5),  ylim = c(34.34, 35.65), ratio = 1.3) +
   geom_point(data = phen_site2, aes(x = lon, y = lat), shape = 21, color = "black", fill = "grey50", size = 3) +
-  geom_text(data = sb, aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=4.0, angle = 0, vjust= -0.7, hjust = 0.98, color = "black") +
-  geom_text(data = mor, aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=4.0, angle = 0, vjust= 0.5, hjust = 1.13, color = "black") +
+  geom_text(data = sb, aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=4.0, angle = 0, vjust= -0.75, hjust = 0.98, color = "black") +
+  geom_text(data = mor, aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=4.0, angle = 0, vjust= 0.45, hjust = 1.13, color = "black") +
   labs(x="Longitude",y="Latitude") +
   theme_classic() +
+  theme(panel.border = element_rect(colour = "black",  fill=NA)) +
+  theme(axis.title=element_text(size=12,face="bold")) +
   theme(panel.background = element_rect(fill='lightblue'))
 phen_map
 
@@ -54,7 +55,7 @@ phen_map
 
 ca_inset <- ggplot(data = ca_df, mapping = aes(x = long, y = lat, group = group)) + 
   coord_fixed(1.3) + 
-  geom_polygon(color = "black", fill = "navajowhite2") +
+  geom_polygon(color = "black", fill = "lightgrey") +
   theme_nothing() +
   geom_rect(aes(xmin=-121.1,xmax=-119.4,ymin=34.2,ymax=35.7),colour="red",fill=NA,size=1)
 ca_inset
@@ -64,11 +65,11 @@ ca_inset
 # --------------------------------------------------------------------------
 
 #png(file="phenology_map.png",w=1800,h=1800, res=300)
-pdf("phenology_map.pdf", width = 4.2, height = 4.2)
+pdf("phenology_map.pdf", width = 4.2, height = 4.0)
 grid.newpage()
 #par(mar=c(2.3,2.1,1.5,0.7)+0.1)
-v1<-viewport(width = 1, height = 1, x = 0.5, y = 0.5) #plot area for the main map
-v2<-viewport(width = .45, height = .45, x = 0.78, y = 0.73) #plot area for the inset map
+v1<-viewport(width = 1, height = 1, x = 0.49, y = 0.49) #plot area for the main map
+v2<-viewport(width = .45, height = .45, x = 0.77, y = 0.72) #plot area for the inset map
 print(phen_map,vp=v1) 
 print(ca_inset,vp=v2)
 dev.off()
