@@ -6,6 +6,10 @@ date: "24 May 2016"
 
 Once you have your data out of GRASSIn stand-alone R
 
+# Example of downloading file directly from github
+download.file("https://raw.github.com/aronlindberg/latent_growth_classes/master/LGC_data.csv", 
+    destfile = "/tmp/test.csv", method = "curl")
+
 load("file_rast.RData")
 load("file_vect.RData")
 

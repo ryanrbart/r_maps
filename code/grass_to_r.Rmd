@@ -32,6 +32,13 @@ Read a raster or vector file into R
 file_rast = readRAST("file.rast")
 file_vect = readVECT("file.vect")
 
+Need to bring...
+DEM
+Aspect (convert to radians)
+Slope (convert to radians)
+Watershed boundary (vector)
+stream network (vector)
+
 Save vector and raster files to be opened in stand-alone (non-grass) R
 save(file_rast, file = "file_rast.RData")
 save(file_vect, file = "file_vect.RData")
