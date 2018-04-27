@@ -61,14 +61,17 @@ fire_map <- ggplot() +
   geom_sf(data=states, color="black") +
   geom_sf(data=country, color="black") +
   geom_point(data = sites, aes(x = lon, y = lat), shape = 19, color = "black", fill = "grey50", size = 2) +
-  geom_text(data = dplyr::filter(sites, name == 'Santa Barbara'), aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=4.0, angle = 0, vjust= -0.75, hjust = 0.98, color = "black") +
-  geom_text(data = dplyr::filter(sites, name == 'Santa Fe'), aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=4.0, angle = 0, vjust= 0.45, hjust = 1.13, color = "black") +
-  geom_text(data = dplyr::filter(sites, name == 'Southern Sierra'), aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=4.0, angle = 0, vjust= -0.75, hjust = 0.98, color = "black") +
-  geom_text(data = dplyr::filter(sites, name == 'HJ Andrews'), aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=4.0, angle = 0, vjust= 0.45, hjust = 0, color = "black") +
+  geom_text(data = dplyr::filter(sites, name == 'Santa Barbara'), aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=3.0, angle = 0, vjust= -0.75, hjust = 0.98, color = "black") +
+  geom_text(data = dplyr::filter(sites, name == 'Santa Fe'), aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=3.0, angle = 0, vjust= 0.45, hjust = 1.13, color = "black") +
+  geom_text(data = dplyr::filter(sites, name == 'Southern Sierra'), aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=3.0, angle = 0, vjust= -0.75, hjust = 0.98, color = "black") +
+  geom_text(data = dplyr::filter(sites, name == 'HJ Andrews'), aes(x = lon, y = lat, label = paste("  ", as.character(name), sep="")), size=3.0, angle = 0, vjust= 0.45, hjust = 0, color = "black") +
   labs(x="Longitude",y="Latitude") +
   theme_classic() +
   theme(legend.position="none")
 fire_map
+
+
+ggsave(filename = "images/fire_effects_map.tiff", width=4,height=4)
 
 
 
