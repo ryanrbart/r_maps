@@ -17,13 +17,13 @@ library(devtools)
 # Big Creek Detailed Map (Data Prep)
 # --------------------------------------------------------------------------
 
-load("data/ssczo/bc_aspect.RData")
-load("data/ssczo/bc_basin.RData")
-load("data/ssczo/bc_dem30m.RData")
-load("data/ssczo/bc_slope.RData")
-load("data/ssczo/bc_stream.RData")
-load("data/ssczo/bc_basin_v.RData")
-load("data/ssczo/bc_stream_v.RData")
+load("data/dem/kings_sj_tile/bc_aspect.RData")
+load("data/dem/kings_sj_tile/bc_basin.RData")
+load("data/dem/kings_sj_tile/bc_dem30m.RData")
+load("data/dem/kings_sj_tile/bc_slope.RData")
+load("data/dem/kings_sj_tile/bc_stream.RData")
+load("data/dem/kings_sj_tile/bc_basin_v.RData")
+load("data/dem/kings_sj_tile/bc_stream_v.RData")
 
 # summary of imported data
 #summary(bc_aspect)
@@ -71,11 +71,11 @@ bc_stream_subset_sq = crop(bc_stream_v, bbox(bc_aspect_r))              # Includ
 # P301 Detailed Map (Data Prep)
 # --------------------------------------------------------------------------
 
-load("data/ssczo/bc_aspect.RData")
-load("data/ssczo/bc_dem30m.RData")
-load("data/ssczo/bc_slope.RData")
-load("data/ssczo/p301_basin_v.RData")
-load("data/ssczo/p301_stream_v.RData")
+load("data/dem/kings_sj_tile/bc_aspect.RData")
+load("data/dem/kings_sj_tile/bc_dem30m.RData")
+load("data/dem/kings_sj_tile/bc_slope.RData")
+load("data/dem/kings_sj_tile/p301_basin_v.RData")
+load("data/dem/kings_sj_tile/p301_stream_v.RData")
 
 # summary of imported data
 #summary(bc_aspect)
